@@ -1,0 +1,41 @@
+version: '3'
+services:
+  database:
+    image: mariadb:latest
+    container_name: drupal_db
+    environment:
+      MYSQL_DATABASE: drupal
+      MYSQL_USER: drupal
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: password
+    volumes:
+      - database_data:/var/lib/mysql
+    restart: always
+  
+  drupal:
+    depends_on:
+      - database
+    image: drupal:9.2.5
+    container_name: drupal_9
+    ports:
+      - "8088:80"
+    volumes:
+      - ./:/opt/drupal
+    restart: always
+
+  phpmyadmin:
+    depends_on:
+      - database
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: drupal_phpmyadmin
+    restart: always
+    ports:
+      - "8089:80"
+    environment:
+       #UPLOAD_LIMIT: 1G #// for max upload file
+       PMA_HOST: database
+       MYSQL_ROOT_PASSWORD: password
+
+
+volumes:
+  database_data:
